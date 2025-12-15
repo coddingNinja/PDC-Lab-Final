@@ -2,11 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
+const { response } = require("express");
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 
 // -------------------- Configuration --------------------
-const REQUESTS = 100; 
+const REQUESTS = 1000; 
 const IMAGE_PATH = path.join("./", "test.png");
 
 // gRPC proto and clients
@@ -19,12 +20,13 @@ const ImageClassifier = grpcObject.imageclassifier.ImageClassifier;
 async function benchmarkREST() {
   const start = Date.now();
   for (let i = 0; i < REQUESTS; i++) {
-    await fetch("http://localhost:3001/uploadImage", {
+  const response= await fetch("http://localhost:3001/uploadImage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ imageBase64: fs.readFileSync(IMAGE_PATH).toString("base64") }),
     });
   }
+
   const end = Date.now();
   console.log("REST total time (ms):", end - start);
   console.log("REST avg latency (ms):", (end - start) / REQUESTS);

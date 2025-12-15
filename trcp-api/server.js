@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const { initTRPC } = require("@trpc/server");
 const { createExpressMiddleware } = require("@trpc/server/adapters/express");
@@ -11,7 +12,7 @@ function classifyImage() {
   const labels = ["cat", "dog", "car", "person"];
   return {
     label: labels[Math.floor(Math.random() * labels.length)],
-    confidence: Math.random().toFixed(2),
+    confidence: parseFloat(Math.random().toFixed(2)),
   };
 }
 
@@ -23,13 +24,17 @@ const appRouter = t.router({
         imageBase64: z.string(),
       })
     )
-    .mutation(() => {
-      return classifyImage();
+    .mutation(({ input }) => {
+      // Here you can use input.imageBase64 for actual AI inference
+      const result = classifyImage();
+      return { result };
     }),
 });
 
-// Express app
 const app = express();
+
+// JSON middleware (needed for fetch JSON requests)
+app.use(express.json());
 
 app.use(
   "/trpc",
@@ -42,5 +47,4 @@ app.listen(3003, () => {
   console.log("tRPC server running at http://localhost:3003/trpc");
 });
 
-// Export type (not used in JS, but required internally)
 module.exports = { appRouter };

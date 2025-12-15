@@ -9,7 +9,6 @@ const packageDef = protoLoader.loadSync(PROTO_PATH, {});
 const grpcObject = grpc.loadPackageDefinition(packageDef);
 const imageClassifierPackage = grpcObject.imageclassifier;
 
-// gRPC client to Microservice B
 const grpcClient = new imageClassifierPackage.ImageClassifier(
   "localhost:50051",
   grpc.credentials.createInsecure()
@@ -30,6 +29,6 @@ app.post("/uploadImage", (req, res) => {
   });
 });
 
-app.listen(3001, () => {
-  console.log("Microservice A running at http://localhost:3001");
+app.listen(4000, () => {
+  console.log("Microservice A running at http://localhost:4000");
 });
